@@ -23,27 +23,25 @@ foreach (var item in input.Split(", "))
     var letter = item.First();
     var number = int.Parse(new string(item.Skip(1).ToArray()));
     direction = (360 + direction + (letter == 'R' ? 90 : -90)) % 360;
-    Move move = null;
-    switch (direction)
-    {
-        case 0:
-            move = (ref int x, ref int y, int val) => y += val;
-            break;
-        case 90:
-            move = (ref int x, ref int y, int val) => x += val;
-            break;
-        case 180:
-            move = (ref int x, ref int y, int val) => y -= val;
-            break;
-        case 270:
-            move = (ref int x, ref int y, int val) => x -= val;
-            break;
-        default: throw new Exception();
-    }
 
     for (int i = 0; i < number; i++)
     {
-        move(ref x, ref y, 1);
+        switch (direction)
+        {
+            case 0:
+                y++;
+                break;
+            case 90:
+                x++;
+                break;
+            case 180:
+                y--;
+                break;
+            case 270:
+                x--;
+                break;
+            default: throw new Exception();
+        }
         var location = (x, y);
         if (visited.Contains(location))
         {
@@ -59,5 +57,3 @@ timer.Stop();
 Console.WriteLine(result);
 Console.WriteLine(timer.ElapsedMilliseconds + "ms");
 Console.ReadLine();
-
-delegate void Move(ref int x, ref int y, int value);
