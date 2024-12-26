@@ -576,7 +576,7 @@ var result = "";
 
 var lines = input.Split(Environment.NewLine).ToList();
 
-result = string.Join("", Enumerable.Range(0, lines.First().Length).Select(x => lines.Select(y => y[x]).GroupBy(y => y).OrderByDescending(y => y.Count()).Select(y => y.Key).First()));
+result = string.Join("", Enumerable.Range(0, lines.First().Length).Select(x => lines.Select(y => y[x]).GroupBy(y => y).OrderBy(y => y.Count()).Select(y => y.Key).First()));
 
 timer.Stop();
 Console.WriteLine(result);
