@@ -1092,10 +1092,7 @@ xjinphzm-bmvyz-hvbizodx-xviyt-xjvodib-ozxcijgjbt-343[ixbjv]
 jyfvnlupj-ibuuf-svnpzapjz-851[gmsnf]";
 
 var smallInput =
-@"aaaaa-bbb-z-y-x-123[abxyz]
-a-b-c-d-e-f-g-h-987[abcde]
-not-a-real-room-404[oarel]
-totally-real-room-200[decoy]";
+@"qzmt-zixmtkozy-ivhz-343[xx]";
 
 var smallest =
 @"";
@@ -1117,9 +1114,12 @@ foreach (var line in input.Split(Environment.NewLine))
 
     if (ValidChecksum(name, checksum))
     {
-        result += sector;
+        var decrypted = string.Join("", name.Select(x => Decrypt(x, sector)));
+        Console.WriteLine($"{sector} {decrypted}");
     }
 }
+
+char Decrypt(char x, int sector) => (char)(97 + ((((ushort)x - 97) + sector) % 26));
 
 bool ValidChecksum(List<char> chars, List<char> checksum)
 {
