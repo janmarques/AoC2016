@@ -6,9 +6,9 @@ LLRURUDUULRURRUDURRDLUUUDDDDURUUDLLDLRULRUUDUURRLRRUDLLUDLDURURRDDLLRUDDUDLDUUDD
 UURUDRRDDLRRRLULLDDDRRLDUDLRRULUUDULLDUDURRDLDRRRDLRDUUUDRDRRLLDULRLUDUUULRULULRUDURDRDDLDRULULULLDURULDRUDDDURLLDUDUUUULRUULURDDDUUUURDLDUUURUDDLDRDLLUDDDDULRDLRUDRLRUDDURDLDRLLLLRLULRDDUDLLDRURDDUDRRLRRDLDDUDRRLDLUURLRLLRRRDRLRLLLLLLURULUURRDDRRLRLRUURDLULRUUDRRRLRLRULLLLUDRULLRDDRDDLDLDRRRURLURDDURRLUDDULRRDULRURRRURLUURDDDUDLDUURRRLUDUULULURLRDDRULDLRLLUULRLLRLUUURUUDUURULRRRUULUULRULDDURLDRRULLRDURRDDDLLUDLDRRRRUULDDD";
 
 var smallInput =
-@"UUUUUUUUUUUULLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
-RRRRRRRRDDD
-LURDLDDDDDDDDDDDDDDDDD
+@"ULL
+RRDDD
+LURDL
 UUUUD";
 
 var smallest =
@@ -23,15 +23,34 @@ var result = "";
 
 var instructions = input.Split(Environment.NewLine).Select(x => x.ToArray()).ToList();
 
-    var pos = 5;
+char pos = '5';
+
+var up = new Dictionary<char, char> { { 'A', '6' }, { '6', '2' }, { 'D', 'B' }, { 'B', '7' }, { '7', '3' }, { '3', '1' }, { 'C', '8' }, { '8', '4' } };
+var right = new Dictionary<char, char> { { '2', '3' }, { '3', '4' }, { '5', '6' }, { '6', '7' }, { '7', '8' }, { '8', '9' }, { 'A', 'B' }, { 'B', 'C' } };
 foreach (var instruction in instructions)
 {
     foreach (var direction in instruction)
     {
-        if (direction == 'U') { pos -= pos <= 3 ? 0 : 3; }
-        if (direction == 'D') { pos += pos >= 7 ? 0 : 3; }
-        if (direction == 'L') { pos -= pos % 3 == 1 ? 0 : 1; }
-        if (direction == 'R') { pos += pos % 3 == 0 ? 0 : 1; }
+        if (direction == 'U')
+        {
+            var entry = up.SingleOrDefault(x => x.Key == pos);
+            if (entry.Value != default) { pos = entry.Value; }
+        }
+        if (direction == 'D')
+        {
+            var entry = up.SingleOrDefault(x => x.Value == pos);
+            if (entry.Key != default) { pos = entry.Key; }
+        }
+        if (direction == 'R')
+        {
+            var entry = right.SingleOrDefault(x => x.Key == pos);
+            if (entry.Value != default) { pos = entry.Value; }
+        }
+        if (direction == 'L')
+        {
+            var entry = right.SingleOrDefault(x => x.Value == pos);
+            if (entry.Key != default) { pos = entry.Key; }
+        }
     }
     result += pos.ToString();
 }
