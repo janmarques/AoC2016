@@ -1927,7 +1927,28 @@ var timer = System.Diagnostics.Stopwatch.StartNew();
 
 var result = 0;
 
-var qqq = input.Split(Environment.NewLine).Select(x => x.Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).OrderBy(x => x).ToList()).ToList();
+var qqq = new List<List<int>>();
+var one = new List<int>();
+var two = new List<int>();
+var three = new List<int>();
+
+foreach (var item in input.Split(Environment.NewLine).Select(x => x.Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray()))
+{
+    one.Add(item[0]);
+    two.Add(item[1]);
+    three.Add(item[2]);
+    if (one.Count == 3)
+    {
+        qqq.Add(one.OrderBy(x => x).ToList());
+        qqq.Add(two.OrderBy(x => x).ToList());
+        qqq.Add(three.OrderBy(x => x).ToList());
+
+        one = new List<int>();
+        two = new List<int>();
+        three = new List<int>();
+    }
+}
+
 
 result = qqq.Count(ValidTriangle);
 
