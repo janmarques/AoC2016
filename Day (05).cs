@@ -12,19 +12,29 @@ input = fullInput;
 //input = smallest;
 var timer = System.Diagnostics.Stopwatch.StartNew();
 
-var result = "";
-
-for (int i = 0; result.Length != 8; i++)
+var result = new char[8];
+var toVisit = Enumerable.Range(0, 8).ToHashSet();
+var found = 0;
+for (int i = 0; toVisit.Count != 0; i++)
 {
     var md5 = CreateMD5(input + i);
     if (md5.StartsWith("00000"))
     {
-        result += md5[5];
+        if (md5[5] > '7')
+        {
+            continue;
+        }
+        var index = int.Parse(md5[5].ToString());
+        if (toVisit.Contains(index))
+        {
+            result[index] = md5[6];
+            toVisit.Remove(index);
+        }
     }
 }
 
 timer.Stop();
-Console.WriteLine(result.ToLower());
+Console.WriteLine(new string(result).ToLower());
 Console.WriteLine(timer.ElapsedMilliseconds + "ms");
 Console.ReadLine();
 
