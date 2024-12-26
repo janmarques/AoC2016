@@ -2001,10 +2001,10 @@ nefefqadkmytguyp[ucqagcoyxinbrvbw]neksoxgtnnfojobtx[bxhdwvwfhybtbzkijj]poayieifs
 tivudfusgnewzshs[mausfjbgxmyibin]yponuityptavbhekrlg[qeyafuevtlqemtfa]owtdxadrwwbxbrkl[obfcyxbifipwhduubu]mjocivgvrcbrllso";
 
 var smallInput =
-@"abba[mnop]qrst
-abcd[bddb]xyyx
-aaaa[qwer]tyui
-ioxxoj[asdfgh]zxcvbn";
+@"aba[bab]xyz
+xyx[xyx]xyx
+aaa[kek]eke
+zazbz[bzb]cdb";
 
 var smallest =
 @"";
@@ -2027,19 +2027,33 @@ bool IsValid(string s)
 {
     var parts = s.Split('[', ']').Select(x => x.ToArray()).Select((x, i) => (x, hyperNet: i % 2 == 1)).ToList();
 
-    return parts.Where(x => x.hyperNet).All(x => !IsAbba(x.x)) && parts.Where(x => !x.hyperNet).Any(x => IsAbba(x.x));
+    var abas = parts.Where(x => !x.hyperNet).SelectMany(x => GetAbas(x.x)).ToList();
+    var babs = abas.Select(x => new[] { x[1], x[0], x[1] }).ToList();
+
+    return parts.Where(x => x.hyperNet).Any(x => babs.Any(y => ContainsBab(x.x, y)));
 }
 
-bool IsAbba(char[] chars)
+bool ContainsBab(char[] chars, char[] bab)
 {
-    for (var i = 0; i < chars.Length - 3; i++)
+    for (var i = 0; i < chars.Length - 2; i++)
     {
-        if (chars[i] == chars[i + 3] && chars[i + 1] == chars[i + 2] && chars[i] != chars[i + 1])
+        if (chars[i] == bab[0] && chars[i + 1] == bab[1] && chars[i + 2] == bab[2])
         {
             return true;
         }
     }
     return false;
+}
+
+IEnumerable<char[]> GetAbas(char[] chars)
+{
+    for (var i = 0; i < chars.Length - 2; i++)
+    {
+        if (chars[i] == chars[i + 2] && chars[i] != chars[i + 1])
+        {
+            yield return new[] { chars[i], chars[i + 1], chars[i + 2] };
+        }
+    }
 }
 
 timer.Stop();
