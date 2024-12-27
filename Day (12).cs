@@ -70,37 +70,27 @@ class Assembunny
                 }
                 else
                 {
-                    value = SafeGet(split[1].Single());
+                    value = Registers[split[1].Single()];
                 }
-                SafeSet(split[2].Single(), value);
+
+                Registers[split[2].Single()] = value;
             }
             if (op == "inc")
             {
-                var key = split[1].Single();
-                SafeSet(key, SafeGet(key) + 1);
+                Registers[split[1].Single()]++;
             }
             if (op == "dec")
             {
-                var key = split[1].Single();
-                SafeSet(key, SafeGet(key) - 1);
+                Registers[split[1].Single()]--;
             }
             if (op == "jnz")
             {
-                if (SafeGet(split[1].Single()) != 0)
+                if (Registers[split[1].Single()] != 0)
                 {
                     i += int.Parse(split[2]) - 1;
                 }
             }
         }
-    }
-    void SafeSet(char c, int value)
-    {
-        if (!Registers.ContainsKey(c)) { Registers[c] = 0; }
-    }
 
-    int SafeGet(char c)
-    {
-        if (!Registers.ContainsKey(c)) { Registers[c] = 0; }
-        return Registers[c];
     }
 }
