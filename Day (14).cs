@@ -8,7 +8,7 @@ var smallest =
 @"";
 
 var input = smallInput;
-input = fullInput;
+//input = fullInput;
 //input = smallest;
 var timer = System.Diagnostics.Stopwatch.StartNew();
 
@@ -19,6 +19,10 @@ var left = 64;
 for (int i = 0; ; i++)
 {
     var hash = CreateMD5(input + i);
+    for (int k = 0; k < 2016; k++)
+    {
+        hash = CreateMD5(hash.ToLower());
+    }
     var foundTriplet = false;
     for (int j = 0; j < hash.Length - 2; j++)
     {
@@ -26,7 +30,7 @@ for (int i = 0; ; i++)
         {
             triplets[i] = hash[j];
             foundTriplet = true;
-            Console.WriteLine($"Candidate 3x{hash[j]} #{i} in {hash}");
+            //Console.WriteLine($"Candidate 3x{hash[j]} #{i} in {hash}");
         }
         if (j < hash.Length - 4 && hash[j] == hash[j + 1] && hash[j] == hash[j + 2] && hash[j] == hash[j + 3] && hash[j] == hash[j + 4])
         {
@@ -36,7 +40,7 @@ for (int i = 0; ; i++)
                 left--;
                 triplets.Remove(triplet.Key);
 
-                Console.WriteLine($"Removing 5x{hash[j]}(#{triplet.Key}) #{i} in {hash}");
+                Console.WriteLine($"Removing diff({i -triplet.Key }) 5x{hash[j]}(#{triplet.Key}) #{i} in {hash}");
 
                 if (left == 0)
                 {
@@ -49,7 +53,7 @@ for (int i = 0; ; i++)
 }
 end:;
 timer.Stop();
-Console.WriteLine(result);
+Console.WriteLine(result); // 22034 too low. 22045 is right and index one more. But wtf?????
 Console.WriteLine(timer.ElapsedMilliseconds + "ms");
 Console.ReadLine();
 
