@@ -27,18 +27,18 @@ var position = (x: 1, y: 1);
 
 var pq = new PrioritySet<State, long>();
 pq.Enqueue(new State { Position = position, Steps = 0, Visited = new HashSet<(int x, int y)>() }, 0);
+var visitable = new HashSet<(int, int)> { position };
 
 while (pq.Count > 0)
 {
     var state = pq.Dequeue();
-    if (state.Steps >= result)
+    if (state.Steps > 50)
     {
         break;
     }
-    if (state.Position == target)
+    if (state.Steps <= 50)
     {
-        result = Math.Min(result, state.Steps);
-        continue;
+        visitable.Add(state.Position);
     }
 
     foreach (var item in Utils.Directions)
@@ -55,6 +55,8 @@ while (pq.Count > 0)
         pq.Enqueue(newState, newState.Steps);
     }
 }
+
+result = visitable.Count;
 
 bool IsWall(int x, int y)
 {
