@@ -2,7 +2,7 @@
 using AoC2024;
 
 var fullInput =
-@"polonium-G thulium-G thulium-C promethium-G ruthenium-G ruthenium-C cobalt-G cobalt-C
+@"polonium-G thulium-G thulium-C promethium-G ruthenium-G ruthenium-C cobalt-G cobalt-C elerium-G elerium-C dilithium-G dilithium-C
 polonium-C promethium-C
 
 ";
