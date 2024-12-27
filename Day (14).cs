@@ -8,14 +8,14 @@ var smallest =
 @"";
 
 var input = smallInput;
-//input = fullInput;
+input = fullInput;
 //input = smallest;
 var timer = System.Diagnostics.Stopwatch.StartNew();
 
 var result = 0;
 
 var triplets = new Dictionary<int, char>();
-var left = 64;
+var digits = 0;
 for (int i = 0; ; i++)
 {
     var hash = CreateMD5(input + i);
@@ -34,15 +34,15 @@ for (int i = 0; ; i++)
         }
         if (j < hash.Length - 4 && hash[j] == hash[j + 1] && hash[j] == hash[j + 2] && hash[j] == hash[j + 3] && hash[j] == hash[j + 4])
         {
-            var corresponding = triplets.Where(x => x.Key > i - 1000 && x.Key != i && x.Value == hash[j]).ToList();
+            var corresponding = triplets.Where(x => x.Key > i - 1000 && x.Key != i && x.Value == hash[j]).OrderBy(x => x.Key).ToList();
             foreach (var triplet in corresponding)
             {
-                left--;
+                digits++;
                 triplets.Remove(triplet.Key);
 
-                Console.WriteLine($"Removing diff({i -triplet.Key }) 5x{hash[j]}(#{triplet.Key}) #{i} in {hash}");
+                Console.WriteLine($"Digit #{digits} - Removing diff({i - triplet.Key}) 5x{hash[j]}(#{triplet.Key}) #{i} in {hash}");
 
-                if (left == 0)
+                if (digits == 64)
                 {
                     result = triplet.Key;
                     goto end;
