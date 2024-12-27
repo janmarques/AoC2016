@@ -17,31 +17,35 @@ var timer = System.Diagnostics.Stopwatch.StartNew();
 var result = "";
 var length = 35651584;
 
-var a = input.Select(x => x == '1').ToArray();
+var cnt = input.Length;
 
-while (a.Length < length)
+var arr = new bool[length];
+Array.Copy(input.Select(x => x == '1').ToArray(), arr, cnt);
+
+while (cnt < length)
 {
-    a = a.Concat(new[] { false }).Concat(a.Reverse().Select(x => !x)).ToArray();
+    arr[cnt] = false;
+    Array.Copy(arr[0..(cnt)].Reverse().Select(x => !x).ToArray(), 0, arr, cnt + 1, Math.Min(cnt, arr.Length - cnt-1));
+    cnt *= 2;
+    cnt++;
 }
 
-//Console.WriteLine(string.Join("", a.Select(x => x ? "1" : "0")));
+//Console.WriteLine(string.Join("", arr.Select(x => x ? "1" : "0")));
 
-var checksum = a.Take(length).ToArray();
-
+var checksum = arr.Take(length).ToArray();
 int k = 0;
-while (checksum.Length % 2 == 0)
+while (length % 2 == 0)
 {
     //Console.WriteLine(k.ToString());
     k++;
-    var newChecksum = new bool[checksum.Length / 2];
-    for (int i = 0; i < checksum.Length - 1; i = i + 2)
+    for (int i = 0; i < length - 1; i = i + 2)
     {
-        newChecksum[i/2] = checksum[i] == checksum[i + 1];
+        checksum[i / 2] = checksum[i] == checksum[i + 1];
     }
-    checksum = newChecksum;
+    length /= 2;
 }
 
-result = string.Join("", checksum.Select(x => x ? "1" : "0"));
+result = string.Join("", checksum.Take(length).Select(x => x ? "1" : "0"));
 
 timer.Stop();
 Console.WriteLine(result);
