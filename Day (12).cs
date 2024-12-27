@@ -35,11 +35,11 @@ var smallest =
 @"";
 
 var input = smallInput;
-//input = fullInput;
+input = fullInput;
 //input = smallest;
 var timer = System.Diagnostics.Stopwatch.StartNew();
 
-var result = 0;
+var result = 0L;
 
 var asm = new Assembunny();
 asm.Execute(input.Split(Environment.NewLine).ToArray());
@@ -47,50 +47,68 @@ asm.Execute(input.Split(Environment.NewLine).ToArray());
 result = asm.Registers['a'];
 
 timer.Stop();
-Console.WriteLine(result);
+Console.WriteLine(result); // 9227771 too high
 Console.WriteLine(timer.ElapsedMilliseconds + "ms");
 Console.ReadLine();
 
 class Assembunny
 {
-    public Dictionary<char, int> Registers { get; set; } = new Dictionary<char, int>();
+    public Dictionary<char, long> Registers { get; set; } = new Dictionary<char, long>();
     public void Execute(string[] lines)
     {
-        for (int i = 0; i < lines.Length; i++)
+        for (long i = 0; i < lines.Length; i++)
         {
             var line = lines[i];
+
+            //Console.WriteLine(line);
             var split = line.Split(" ").ToArray();
+
             var op = split[0];
             if (op == "cpy")
             {
-                var value = 0;
-                if (split[1].Length > 1 || !char.IsLetter(split[1][0]))
-                {
-                    value = int.Parse(split[1]);
-                }
-                else
-                {
-                    value = Registers[split[1].Single()];
-                }
-
-                Registers[split[2].Single()] = value;
+                SafeSet(split[2].Single(), GetValueOrReference(split[1]));
             }
             if (op == "inc")
             {
-                Registers[split[1].Single()]++;
+                var key = split[1].Single();
+                SafeSet(key, SafeGet(key) + 1);
             }
             if (op == "dec")
             {
-                Registers[split[1].Single()]--;
+                var key = split[1].Single();
+                SafeSet(key, SafeGet(key) - 1);
             }
             if (op == "jnz")
             {
-                if (Registers[split[1].Single()] != 0)
+                if (GetValueOrReference(split[1]) != 0)
                 {
-                    i += int.Parse(split[2]) - 1;
+                    var val = long.Parse(split[2]);
+                    i += val - 1;
                 }
             }
         }
+    }
+    long GetValueOrReference(string s)
+    {
+        if (s.Length > 1 || !char.IsLetter(s[0]))
+        {
+            return long.Parse(s);
+        }
+        else
+        {
+            return SafeGet(s.Single());
+        }
+    }
 
+    void SafeSet(char c, long value)
+    {
+        if (!Registers.ContainsKey(c)) { Registers[c] = 0; }
+        Registers[c] = value;
+    }
+
+    long SafeGet(char c)
+    {
+        if (!Registers.ContainsKey(c)) { Registers[c] = 0; }
+        return Registers[c];
     }
 }
