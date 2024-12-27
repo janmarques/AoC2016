@@ -16,7 +16,9 @@ var result = 0;
 
 var triplets = new Dictionary<int, char>();
 var digits = 0;
-for (int i = 0; ; i++)
+var indices = new HashSet<int>();
+var maxI = int.MaxValue;
+for (int i = 0; i < maxI; i++)
 {
     var hash = CreateMD5(input + i);
     for (int k = 0; k < 2016; k++)
@@ -37,23 +39,23 @@ for (int i = 0; ; i++)
             var corresponding = triplets.Where(x => x.Key > i - 1000 && x.Key != i && x.Value == hash[j]).OrderBy(x => x.Key).ToList();
             foreach (var triplet in corresponding)
             {
-                digits++;
+                indices.Add(triplet.Key);
                 triplets.Remove(triplet.Key);
 
                 Console.WriteLine($"Digit #{digits} - Removing diff({i - triplet.Key}) 5x{hash[j]}(#{triplet.Key}) #{i} in {hash}");
 
-                if (digits == 64)
+                if (indices.Count == 64 && maxI == int.MaxValue) // can be that coming hashes match earlier indices
                 {
-                    result = triplet.Key;
-                    goto end;
+                    maxI = i + 1000;
                 }
             }
         }
     }
 }
-end:;
+
+result = indices.OrderBy(x => x).ElementAt(63);
 timer.Stop();
-Console.WriteLine(result); // 22034 too low. 22045 is right and index one more. But wtf?????
+Console.WriteLine(result);
 Console.WriteLine(timer.ElapsedMilliseconds + "ms");
 Console.ReadLine();
 
