@@ -2,63 +2,60 @@
 using AoC2024;
 using System.Collections;
 using System.Numerics;
+using System.Text;
 
 var fullInput = "dmypynyp";
 
-var smallInput = "ulqzkmiv";
+var smallInput = "ihgpwlah";
 
 var smallest =
 @"";
 
 var input = smallInput;
-input = fullInput;
+//input = fullInput;
 var timer = System.Diagnostics.Stopwatch.StartNew();
 
-var result = int.MaxValue;
+var enc = new ASCIIEncoding();
+var inputArr = enc.GetBytes(input);
 
-var target = (x: 3, y: 3);
+var result = int.MinValue;
 
-var pq = new PrioritySet<State, long>();
-pq.Enqueue(new State { Path = "" }, 0);
-var results = new HashSet<string> { };
+var pq = new PriorityQueue<(byte[] path, int x, int y), long>();
+pq.Enqueue((new byte[0], 0, 0), 0);
 
 while (pq.Count > 0)
 {
-    var state = pq.Dequeue();
+    (byte[] path, int x, int y) = pq.Dequeue();
 
-    if(state.Path == "DRURDRUDDRDL")
-    {
-
-    }
-    if (results.Any() && state.Steps > results.Min(x => x.Length))
+    var steps = path.Length;
+    Utils.Counter("pq", 50_000, extraText: $"{steps} {result} {pq.Count}");
+    if (steps > 1500)
     {
         break;
     }
-    if (state.Position == target)
+    if (x == 3 && y == 3)
     {
-        results.Add(state.Path);
+        result = Math.Max(result, steps);
         continue;
     }
 
-    void TryEnqueue(char dir, char item)
+    void TryEnqueue(string dir, bool item, int xOffset, int yOffset)
     {
-        var isOpen = new[] { 'b', 'c', 'd', 'e', 'f' }.Contains(item);
-        if (isOpen)
+        if (item)
         {
-            var newState = state.Clone();
-            newState.Path += dir;
-            pq.Enqueue(newState, newState.Steps);
+            var newArr = new byte[steps + 1];
+            Array.Copy(path, newArr, steps);
+            newArr[steps] = enc.GetBytes(dir).Single();
+            pq.Enqueue((newArr, x + xOffset, y + yOffset), steps + 1);
         }
     }
 
-    var md5 = CreateMD5(input + state.Path);
-    TryEnqueue('U', md5[0]);
-    TryEnqueue('D', md5[1]);
-    TryEnqueue('L', md5[2]);
-    TryEnqueue('R', md5[3]);
+    var md5 = CreateMD5(inputArr.Union(path).ToArray()).ToArray();
+    TryEnqueue("u", md5[0], 0, -1);
+    TryEnqueue("d", md5[1], 0, 1);
+    TryEnqueue("l", md5[2], -1, 0);
+    TryEnqueue("r", md5[3], 1, 0);
 }
-
-Console.WriteLine(results.OrderBy(x => x.Length).First());
 
 
 timer.Stop();
@@ -69,17 +66,11 @@ Console.ReadLine();
 
 
 //https://stackoverflow.com/questions/11454004/calculate-a-md5-hash-from-a-string
-string CreateMD5(string input)
+IEnumerable<bool> CreateMD5(byte[] input)
 {
-    using System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create();
-    return Convert.ToHexString(md5.ComputeHash(System.Text.Encoding.ASCII.GetBytes(input))).ToLower();
-}
-
-class State
-{
-    public (int x, int y) Position => (Path.Count(x => x == 'R') - Path.Count(x => x == 'L'), Path.Count(x => x == 'D') - Path.Count(x => x == 'U'));
-    public string Path { get; set; }
-    public int Steps => Path.Length;
-
-    public State Clone() => new State { Path = Path };
+    var a = System.Security.Cryptography.MD5.HashData(input);
+    yield return a[0] / 16 >= 11;
+    yield return a[0] % 16 >= 11;
+    yield return a[1] / 16 >= 11;
+    yield return a[1] % 16 >= 11;
 }
