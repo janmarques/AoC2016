@@ -1182,7 +1182,10 @@ var fullInput =
 var smallInput =
 @"5-8
 0-2
-4-7";
+4-7
+12-13
+14-15";
+//3 9 10 11
 
 var smallest =
 @"";
@@ -1196,36 +1199,58 @@ var result = 0L;
 
 var ranges = input.Split(Environment.NewLine).Select(x => x.Split("-").Select(long.Parse).ToArray()).Select(x => (from: x[0], to: x[1])).ToList();
 
+var max = ranges.Count < 10 ? 15 : 4294967295;
 
-foreach (var item in ranges.OrderBy(x => x.to))
+while (true)
 {
-    var others = ranges.Where(x => x != item).ToList();
-    var IR = others.Where(x => InRange(item.to, x)).ToList();
-
-    Console.WriteLine($"{item.from}-{item.to}");
-    if (IR.Count == 0)
+    bool TryMerge()
     {
-        result = item.to + 1;
-        break;
+        foreach (var item in ranges)
+        {
+            foreach (var other in ranges.SkipWhile(x => x != item).Skip(1))
+            {
+                if (Overlaps(item, other))
+                {
+                    ranges.Remove(item);
+                    ranges.Remove(other);
+                    ranges.Add((Math.Min(item.from, other.from), Math.Max(item.to, other.to)));
+                    return true;
+                }
+            }
+        }
+        return false;
     }
-
+    if (!TryMerge()) { break; }
+}
+long Find(long min)
+{
+    var x = ranges.Where(x => x.from > min && ranges.Where(y => y != x && y.from > min).All(y => !InRange(x.to, y))).OrderBy(x => x.to).First();
+    return x.to + 1;
 }
 
-//result = x.to + 1;
+var last = default(long?);
+foreach (var item in ranges.OrderBy(x => x.from))
+{
+    if (last.HasValue)
+    {
+        result += item.from - last.Value - 1;
+    }
+
+    last = item.to;
+    //Console.WriteLine($"{item.from}-{item.to}");
+}
 
 timer.Stop();
-Console.WriteLine(result); // 591077 too low
+Console.WriteLine(result);
 Console.WriteLine(timer.ElapsedMilliseconds + "ms");
 Console.ReadLine();
 
-bool OverlapInAxis(long[] one, long[] two)
+bool Overlaps((long from, long to) one, (long from, long to) two)
 {
-    (var oneFrom, var oneTo) = (one[0], one[1]);
-    (var twoFrom, var twoTo) = (two[0], two[1]);
-    return (oneFrom <= twoTo && twoTo <= oneTo) ||
-        (oneFrom <= twoFrom && twoFrom <= oneTo) ||
-        (oneFrom <= twoFrom && twoTo <= oneTo) ||
-        (twoFrom <= oneFrom && oneTo <= twoTo);
+    return (one.from <= two.to && two.to <= one.to) ||
+        (one.from <= two.from && two.from <= one.to) ||
+        (one.from <= two.from && two.to <= one.to) ||
+        (two.from <= one.from && one.to <= two.to);
 }
 
 bool InRange(long x, (long from, long to) range)
