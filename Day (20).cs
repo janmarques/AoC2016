@@ -1196,6 +1196,7 @@ var result = 0L;
 
 var ranges = input.Split(Environment.NewLine).Select(x => x.Split("-").Select(long.Parse).ToArray()).Select(x => (from: x[0], to: x[1])).ToList();
 
+
 foreach (var item in ranges.OrderBy(x => x.to))
 {
     var others = ranges.Where(x => x != item).ToList();
