@@ -2,7 +2,7 @@
 3014603;
 
 var smallInput =
-3;
+5;
 
 var smallest =
 @"";
@@ -14,19 +14,19 @@ var timer = System.Diagnostics.Stopwatch.StartNew();
 
 var result = 0;
 
-var items = Enumerable.Range(1, input).ToList();
-var i = 1;
-while (true)
+var items = Enumerable.Range(1, input).ToArray();
+var keepEven = true;
+while (items.Count() > 1)
 {
-    if(i == items.Count) { i = 0; }
-    if (items.Count == 1) { break; }
-    items.RemoveAt(i);
-    i++;
+    var ogLast = items.Last();
+    items = items.Where((x, i) => i % 2 == (keepEven ? 0 : 1)).ToArray();
+
+    keepEven = ogLast != items.Last();
 }
 
 result = items.Single();
 
 timer.Stop();
-Console.WriteLine(result);
+Console.WriteLine(result); 
 Console.WriteLine(timer.ElapsedMilliseconds + "ms");
 Console.ReadLine();
