@@ -16,7 +16,7 @@ var result = 0;
 
 var line = input.Select(x => x == '^').ToArray();
 
-var rowCount = 40;
+var rowCount = 400_000;
 
 var lines = new List<bool[]>();
 lines.Add(line);
@@ -51,7 +51,7 @@ for (int i = 0; i < rowCount - 1; i++)
     }
     line = newLine;
 
-    Console.WriteLine(string.Join("", line.Select(x => x ? "^" : ".")));
+    //Console.WriteLine(string.Join("", line.Select(x => x ? "^" : ".")));
     lines.Add(line);
 }
 
