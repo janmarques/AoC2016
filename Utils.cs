@@ -126,7 +126,7 @@ public static class Utils
 
     static Dictionary<string, int> Counters = new Dictionary<string, int>();
     static Dictionary<string, Stopwatch> Timers = new Dictionary<string, Stopwatch>();
-    static public int Counter(string name, int threshold = 10000, long expectedTotal = 0, bool timer = false, string extraText = "")
+    static public int Counter(string name, int threshold = 10000, long expectedTotal = 0, bool timer = false, Func<string> extraText = null)
     {
         if (timer && !Timers.ContainsKey(name))
         {
@@ -154,7 +154,7 @@ public static class Utils
                 }
             }
             var totalStr = expectedTotal == 0 ? "" : $"/{expectedTotal} {(double)value * 100 / expectedTotal}%";
-            Console.WriteLine($"{name} {value} {totalStr} {timerStr} {extraText}");
+            Console.WriteLine($"{name} {value} {totalStr} {timerStr} {(extraText != null ? extraText() : "")}");
         }
         return Counters[name];
     }

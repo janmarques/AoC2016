@@ -1,14 +1,16 @@
-﻿var fullInput =
+﻿using AoC2024;
+
+var fullInput =
 3014603;
 
 var smallInput =
-5;
+7;
 
 var smallest =
 @"";
 
 var input = smallInput;
-//input = fullInput;
+input = fullInput;
 //input = smallest;
 var timer = System.Diagnostics.Stopwatch.StartNew();
 
@@ -19,23 +21,25 @@ var items = Enumerable.Range(1, input).ToList();
 int k = 0;
 while (items.Count() > 1)
 {
-    var toRemove = new HashSet<int>();
-    for (int i = 0; i < items.Count(); i++)
+    Utils.Counter("items", 1000, extraText: () => items.Count().ToString());
+
+    var remove = (items.Count / 2 + k) % items.Count;
+    //Console.WriteLine($"{items[k]} removing {items[remove]}");
+    items.RemoveAt(remove);
+    if (remove < k)
     {
-        if (toRemove.Contains(i)) { continue; }
-        var remove = (items.Except(toRemove).Count() / 2 + k) % items.Except(toRemove).Count();
-        toRemove.Add(remove);
-        Console.WriteLine($"{items[i]} removing {items[remove]}");
+        k %= items.Count;
     }
-    foreach (var item in toRemove.OrderByDescending(x => x))
+    else
     {
-        items.RemoveAt(item);
+        k++;
+        k %= items.Count;
     }
 }
 
 result = items.Single();
 
 timer.Stop();
-Console.WriteLine(result); // 188411 low 31820 low
+Console.WriteLine(result);
 Console.WriteLine(timer.ElapsedMilliseconds + "ms");
 Console.ReadLine();
