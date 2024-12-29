@@ -104,10 +104,10 @@ long CalculateDistance(Cell a, Cell b)
 }
 
 
-var start = grid.Single(x=> x.c == '0');
+var start = grid.Single(x => x.c == '0');
 
-var pq = new PriorityQueue<(Cell, HashSet<Cell> toVisit, long score), long>();
-pq.Enqueue((start, junctions.Where(x => x != start).ToHashSet(), 0), 0);
+var pq = new PriorityQueue<(Cell, HashSet<Cell> toVisit, bool finish, long score), long>();
+pq.Enqueue((start, junctions.Where(x => x != start).ToHashSet(), false, 0), 0);
 
 int i = 0;
 
@@ -117,7 +117,7 @@ var paths = new List<HashSet<Cell>>();
 
 while (pq.Count > 0)
 {
-    var (position, toVisit, score) = pq.Dequeue();
+    var (position, toVisit, finish, score) = pq.Dequeue();
     //if (i % 100 == 0)
     {
         Console.WriteLine($"{i}i {pq.Count}queue {score}score");
@@ -126,7 +126,15 @@ while (pq.Count > 0)
 
     if (!toVisit.Any())
     {
-        result = Math.Min(result, score);
+        if (!finish)
+        {
+            finish = true;
+            toVisit.Add(start);
+        }
+        else
+        {
+            result = Math.Min(result, score);
+        }
     }
 
     foreach (var other in toVisit)
@@ -135,7 +143,7 @@ while (pq.Count > 0)
         var newTotal = score + cost;
         var newPathTaken = toVisit.ToHashSet();
         newPathTaken.Remove(other);
-        pq.Enqueue((other, newPathTaken, newTotal), newTotal);
+        pq.Enqueue((other, newPathTaken, finish, newTotal), newTotal);
     }
 }
 
