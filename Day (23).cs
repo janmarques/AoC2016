@@ -46,7 +46,7 @@ var timer = System.Diagnostics.Stopwatch.StartNew();
 var result = 0L;
 
 var asm = new Assembunny();
-asm.Registers['a'] = 7;
+asm.Registers['a'] = 12;
 asm.Execute(input.Split(Environment.NewLine).ToArray());
 
 result = asm.Registers['a'];
