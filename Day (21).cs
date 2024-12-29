@@ -1,4 +1,6 @@
-﻿var fullInput =
+﻿using AoC2024;
+
+var fullInput =
 @"rotate right 1 step
 swap position 2 with position 4
 rotate based on position of letter g
@@ -117,102 +119,100 @@ var input = smallInput;
 input = fullInput;
 //input = smallest;
 var timer = System.Diagnostics.Stopwatch.StartNew();
-var pw = "abcde".ToList();
-if (input.Length > 300)
-{
-    pw = "abcdefgh".ToList();
-}
-string AsString() => string.Join("", pw);
+var hashed = "fbgdceah";
+
+var permutations = Utils.GetPermutations(hashed.ToCharArray()).ToList();
 
 var result = "";
 
-var prev = AsString();
-
-foreach (var line in input.Split(Environment.NewLine))
+foreach (var item in permutations)
 {
-    Console.WriteLine(line);
-    var split = line.Split(" ");
-    int GetNumber(int pos) => int.Parse(split[pos]);
-    char GetCharacter(int pos) => split[pos].Single();
-
-    void RotateRight(int num)
+    if (Hash(item) == hashed)
     {
-        for (int i = 0; i < num; i++)
-        {
-            pw = pw.TakeLast(1).Concat(pw.SkipLast(1)).ToList();
-        }
+        result = item;
+        break;
     }
-
-    void RotateLeft(int num)
-    {
-        for (int i = 0; i < num; i++)
-        {
-            pw = pw.Skip(1).Concat(pw.Take(1)).ToList();
-        }
-    }
-
-    if (line.StartsWith("swap position"))
-    {
-        var one = GetNumber(2);
-        var two = GetNumber(5);
-        (pw[one], pw[two]) = (pw[two], pw[one]);
-    }
-    else if (line.StartsWith("swap letter"))
-    {
-        var one = pw.IndexOf(GetCharacter(2));
-        var two = pw.IndexOf(GetCharacter(5));
-        (pw[one], pw[two]) = (pw[two], pw[one]);
-    }
-    else if (line.StartsWith("reverse positions"))
-    {
-        var one = GetNumber(2);
-        var two = GetNumber(4);
-        var x = pw[one..(two+1)];
-        x.Reverse();
-        pw = pw.Take(one).Concat(x).Concat(pw.Skip(two+1)).ToList();
-    }
-    else if (line.StartsWith("rotate left"))
-    {
-        var one = GetNumber(2);
-        RotateLeft(one);
-    }
-    else if (line.StartsWith("rotate right"))
-    {
-        var one = GetNumber(2);
-        RotateRight(one);
-    }
-    else if (line.StartsWith("move position"))
-    {
-        var one = GetNumber(2);
-        var two = GetNumber(5);
-        var val = pw[one];
-        pw.RemoveAt(one);
-        pw.Insert(two, val);
-    }
-    else if (line.StartsWith("rotate based on position of letter "))
-    {
-        var one = pw.IndexOf(GetCharacter(6));
-        var extra = one > 3 ? 1 : 0;
-        var sum = (one + extra + 1);
-        //sum %= pw.Count;
-        RotateRight(sum);
-    }
-    else
-    {
-
-    }
-
-    var newPw = AsString();
-    if (newPw == prev && line != "rotate right 0 steps")
-    {
-
-    }
-    Console.WriteLine($"{prev} -> {newPw}");
-    Console.WriteLine();
-    prev = newPw;
 }
 
-result = string.Join("", pw);
+string Hash(string pwIn)
+{
+    var pw = pwIn.ToList();
+    foreach (var line in input.Split(Environment.NewLine))
+    {
+        var split = line.Split(" ");
+        int GetNumber(int pos) => int.Parse(split[pos]);
+        char GetCharacter(int pos) => split[pos].Single();
+
+        void RotateRight(int num)
+        {
+            for (int i = 0; i < num; i++)
+            {
+                pw = pw.TakeLast(1).Concat(pw.SkipLast(1)).ToList();
+            }
+        }
+
+        void RotateLeft(int num)
+        {
+            for (int i = 0; i < num; i++)
+            {
+                pw = pw.Skip(1).Concat(pw.Take(1)).ToList();
+            }
+        }
+
+        if (line.StartsWith("swap position"))
+        {
+            var one = GetNumber(2);
+            var two = GetNumber(5);
+            (pw[one], pw[two]) = (pw[two], pw[one]);
+        }
+        else if (line.StartsWith("swap letter"))
+        {
+            var one = pw.IndexOf(GetCharacter(2));
+            var two = pw.IndexOf(GetCharacter(5));
+            (pw[one], pw[two]) = (pw[two], pw[one]);
+        }
+        else if (line.StartsWith("reverse positions"))
+        {
+            var one = GetNumber(2);
+            var two = GetNumber(4);
+            var x = pw[one..(two + 1)];
+            x.Reverse();
+            pw = pw.Take(one).Concat(x).Concat(pw.Skip(two + 1)).ToList();
+        }
+        else if (line.StartsWith("rotate left"))
+        {
+            var one = GetNumber(2);
+            RotateLeft(one);
+        }
+        else if (line.StartsWith("rotate right"))
+        {
+            var one = GetNumber(2);
+            RotateRight(one);
+        }
+        else if (line.StartsWith("move position"))
+        {
+            var one = GetNumber(2);
+            var two = GetNumber(5);
+            var val = pw[one];
+            pw.RemoveAt(one);
+            pw.Insert(two, val);
+        }
+        else if (line.StartsWith("rotate based on position of letter "))
+        {
+            var one = pw.IndexOf(GetCharacter(6));
+            var extra = one > 3 ? 1 : 0;
+            var sum = (one + extra + 1);
+            //sum %= pw.Count;
+            RotateRight(sum);
+        }
+        else
+        {
+
+        }
+    }
+    return string.Join("", pw);
+}
+
 timer.Stop();
 Console.WriteLine(result); // abchgfed wrong ebcdfagh wrong
 Console.WriteLine(timer.ElapsedMilliseconds + "ms");

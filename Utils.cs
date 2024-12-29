@@ -219,4 +219,21 @@ public static class Utils
             }
         }
     }
+
+    public static IEnumerable<string> GetPermutations(IEnumerable<char> chars)
+    {
+        foreach (var item in chars)
+        {
+            var others = chars.Where(x => x != item);
+            if (!others.Any())
+            {
+                yield return item.ToString();
+                yield break;
+            }
+            foreach (var nested in GetPermutations(others))
+            {
+                yield return item + nested;
+            }
+        }
+    }
 }
