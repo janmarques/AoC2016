@@ -114,7 +114,7 @@ var smallest =
 @"";
 
 var input = smallInput;
-//input = fullInput;
+input = fullInput;
 //input = smallest;
 var timer = System.Diagnostics.Stopwatch.StartNew();
 var pw = "abcde".ToList();
@@ -157,37 +157,31 @@ foreach (var line in input.Split(Environment.NewLine))
         var two = GetNumber(5);
         (pw[one], pw[two]) = (pw[two], pw[one]);
     }
-    else
-    if (line.StartsWith("swap letter"))
+    else if (line.StartsWith("swap letter"))
     {
         var one = pw.IndexOf(GetCharacter(2));
         var two = pw.IndexOf(GetCharacter(5));
         (pw[one], pw[two]) = (pw[two], pw[one]);
     }
-    else
-    if (line.StartsWith("reverse positions"))
+    else if (line.StartsWith("reverse positions"))
     {
         var one = GetNumber(2);
         var two = GetNumber(4);
-        for (int i = 0; i < Math.Max(Math.Abs((two - one) / 2), 1); i++)
-        {
-            (pw[one + i], pw[two - i]) = (pw[two - i], pw[one + i]);
-        }
+        var x = pw[one..(two+1)];
+        x.Reverse();
+        pw = pw.Take(one).Concat(x).Concat(pw.Skip(two+1)).ToList();
     }
-    else
-    if (line.StartsWith("rotate left"))
+    else if (line.StartsWith("rotate left"))
     {
         var one = GetNumber(2);
         RotateLeft(one);
     }
-    else
-    if (line.StartsWith("rotate right"))
+    else if (line.StartsWith("rotate right"))
     {
         var one = GetNumber(2);
         RotateRight(one);
     }
-    else
-    if (line.StartsWith("move position"))
+    else if (line.StartsWith("move position"))
     {
         var one = GetNumber(2);
         var two = GetNumber(5);
@@ -195,8 +189,7 @@ foreach (var line in input.Split(Environment.NewLine))
         pw.RemoveAt(one);
         pw.Insert(two, val);
     }
-    else
-    if (line.StartsWith("rotate based on position of letter "))
+    else if (line.StartsWith("rotate based on position of letter "))
     {
         var one = pw.IndexOf(GetCharacter(6));
         var extra = one > 3 ? 1 : 0;
@@ -221,6 +214,6 @@ foreach (var line in input.Split(Environment.NewLine))
 
 result = string.Join("", pw);
 timer.Stop();
-Console.WriteLine(result); // abchgfed wrong
+Console.WriteLine(result); // abchgfed wrong ebcdfagh wrong
 Console.WriteLine(timer.ElapsedMilliseconds + "ms");
 Console.ReadLine();
