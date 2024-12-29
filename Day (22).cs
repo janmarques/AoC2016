@@ -1025,7 +1025,17 @@ Filesystem              Size  Used  Avail  Use%
 /dev/grid/node-x33-y29   94T   68T    26T   72%";
 
 var smallInput =
-@"";
+@"sss
+Filesystem            Size  Used  Avail  Use%
+/dev/grid/node-x0-y0   10T    8T     2T   80%
+/dev/grid/node-x0-y1   11T    6T     5T   54%
+/dev/grid/node-x0-y2   32T   28T     4T   87%
+/dev/grid/node-x1-y0    9T    7T     2T   77%
+/dev/grid/node-x1-y1    8T    0T     8T    0%
+/dev/grid/node-x1-y2   11T    7T     4T   63%
+/dev/grid/node-x2-y0   10T    6T     4T   60%
+/dev/grid/node-x2-y1    9T    8T     1T   88%
+/dev/grid/node-x2-y2    9T    6T     3T   66%";
 
 var smallest =
 @"";
@@ -1050,23 +1060,46 @@ var nodes = input.Split(Environment.NewLine).Skip(2).Select(line =>
     return new Node { Avail = avail, X = x, Y = y, Size = size, Used = used };
 }).ToList();
 
+PrintGrid();
 foreach (var a in nodes)
 {
     if (a.Used == 0) { continue; }
     foreach (var b in nodes)
     {
         if (a == b) { continue; }
-        if (a.Used <= b.Avail)
+        if (a.Used <= b.Avail && b.Used != 0)
         {
             result++;
         }
     }
 }
 
+Console.WriteLine($"X: " + nodes.GroupBy(x => x.X).Max(x => x.Count())); 
+Console.WriteLine($"Y: " + nodes.GroupBy(x => x.Y).Max(x => x.Count())); 
+
+var goalNode = nodes.Single(x => x.X == nodes.Max(x => x.X) && x.Y == 0);
+var targetNode = nodes.Single(x => x.X == 0 && x.Y == 0);
+var empty = nodes.Single(x => x.Used == 0);
+
+//var pq = new PriorityQueue<ApartmentState,>
+
 timer.Stop();
 Console.WriteLine(result);
 Console.WriteLine(timer.ElapsedMilliseconds + "ms");
 Console.ReadLine();
+
+void PrintGrid()
+{
+    for (int y = 0; y <= nodes.Max(x => x.Y); y++)
+    {
+        for (int x = 0; x <= nodes.Max(x => x.X); x++)
+        {
+            var node = nodes.Single(n => n.X == x && n.Y == y);
+            Console.Write($"{node.Used}/{node.Size}\t");
+        }
+        Console.WriteLine();
+    }
+}
 
 class Node
 {
